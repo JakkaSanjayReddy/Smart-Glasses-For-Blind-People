@@ -1,0 +1,40 @@
+#define TRIG_PIN 9 // Ultrasonic Sensor - Trig Pin
+#define ECHO_PIN 10 // Ultrasonic Sensor - Echo Pin
+#define BUZZER_PIN 6 // Buzzer or Vibration Motor
+#define SWITCH_PIN 7 // ON/OFF Switch
+void setup() {
+ pin Mode(TRIG_PIN, OUTPUT);
+ pin Mode(ECHO_PIN, INPUT);
+ pin Mode(BUZZER_PIN, OUTPUT);
+ pin Mode(SWITCH_PIN, INPUT_PULLUP); // Switch with pull-up resistor
+ Serial. Begin(9600);
+}
+void loop() {
+ if (digital Read(SWITCH_PIN) == LOW) { // System is ON
+ long duration;
+ int distance;
+ // Send ultrasonic pulse
+ digitalWrite(TRIG_PIN, LOW);
+ delayMicroseconds(2);
+ digitalWrite(TRIG_PIN, HIGH);
+ delayMicroseconds(10);
+ digitalWrite(TRIG_PIN, LOW);
+ // Measure the time for echo 19
+ duration = pulseIn(ECHO_PIN, HIGH);
+ distance = duration * 0.034 / 2; // Convert time to distance (cm)
+ Serial.print("Distance: ");
+ Serial.print(distance);
+ Serial.println(" cm");
+ // Alert if obstacle is close
+ if (distance > 0 && distance <= 50) { 
+ digitalWrite(BUZZER_PIN, HIGH); // Turn ON buzzer/vibration
+ delay(200);
+ digitalWrite(BUZZER_PIN, LOW); // Turn OFF buzzer/vibration
+ } else {
+ digitalWrite(BUZZER_PIN, LOW); // Ensure buzzer is OFF
+ }
+ } else {
+ digitalWrite(BUZZER_PIN, LOW); // System OFF
+ }
+ delay(200);
+}
